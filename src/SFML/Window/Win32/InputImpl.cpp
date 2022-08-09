@@ -25,9 +25,9 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Window/Window.hpp>
-#include <SFML/Window/Win32/InputImpl.hpp>
 #include <SFML/System/Win32/WindowsHeader.hpp>
+#include <SFML/Window/Win32/InputImpl.hpp>
+#include <SFML/Window/Window.hpp>
 
 
 namespace sf
@@ -38,6 +38,8 @@ namespace priv
 bool InputImpl::isKeyPressed(Keyboard::Key key)
 {
     int vkey = 0;
+
+    // clang-format off
     switch (key)
     {
         default:                   vkey = 0;             break;
@@ -143,6 +145,7 @@ bool InputImpl::isKeyPressed(Keyboard::Key key)
         case Keyboard::F15:        vkey = VK_F15;        break;
         case Keyboard::Pause:      vkey = VK_PAUSE;      break;
     }
+    // clang-format on
 
     return (GetAsyncKeyState(vkey) & 0x8000) != 0;
 }
@@ -161,12 +164,24 @@ bool InputImpl::isMouseButtonPressed(Mouse::Button button)
     int vkey = 0;
     switch (button)
     {
-        case Mouse::Left:     vkey = GetSystemMetrics(SM_SWAPBUTTON) ? VK_RBUTTON : VK_LBUTTON; break;
-        case Mouse::Right:    vkey = GetSystemMetrics(SM_SWAPBUTTON) ? VK_LBUTTON : VK_RBUTTON; break;
-        case Mouse::Middle:   vkey = VK_MBUTTON;  break;
-        case Mouse::XButton1: vkey = VK_XBUTTON1; break;
-        case Mouse::XButton2: vkey = VK_XBUTTON2; break;
-        default:              vkey = 0;           break;
+        case Mouse::Left:
+            vkey = GetSystemMetrics(SM_SWAPBUTTON) ? VK_RBUTTON : VK_LBUTTON;
+            break;
+        case Mouse::Right:
+            vkey = GetSystemMetrics(SM_SWAPBUTTON) ? VK_LBUTTON : VK_RBUTTON;
+            break;
+        case Mouse::Middle:
+            vkey = VK_MBUTTON;
+            break;
+        case Mouse::XButton1:
+            vkey = VK_XBUTTON1;
+            break;
+        case Mouse::XButton2:
+            vkey = VK_XBUTTON2;
+            break;
+        default:
+            vkey = 0;
+            break;
     }
 
     return (GetAsyncKeyState(vkey) & 0x8000) != 0;

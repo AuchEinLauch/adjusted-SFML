@@ -25,21 +25,16 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Window/iOS/WindowImplUIKit.hpp>
+#include <SFML/System/Err.hpp>
+#include <SFML/Window/WindowStyle.hpp>
+#include <SFML/Window/iOS/SFAppDelegate.hpp>
 #include <SFML/Window/iOS/SFView.hpp>
 #include <SFML/Window/iOS/SFViewController.hpp>
-#include <SFML/Window/iOS/SFAppDelegate.hpp>
-#include <SFML/Window/WindowStyle.hpp>
-#include <SFML/System/Err.hpp>
+#include <SFML/Window/iOS/WindowImplUIKit.hpp>
+
 #include <UIKit/UIKit.h>
 
-#if defined(__APPLE__)
-    #if defined(__clang__)
-        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    #elif defined(__GNUC__)
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    #endif
-#endif
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 namespace sf
 {
@@ -53,10 +48,7 @@ WindowImplUIKit::WindowImplUIKit(WindowHandle /* handle */)
 
 
 ////////////////////////////////////////////////////////////
-WindowImplUIKit::WindowImplUIKit(VideoMode mode,
-                                 const String& /* title */,
-                                 unsigned long style,
-                                 const ContextSettings& /* settings */)
+WindowImplUIKit::WindowImplUIKit(VideoMode mode, const String& /* title */, unsigned long style, const ContextSettings& /* settings */)
 {
     m_backingScale = static_cast<float>([SFAppDelegate getInstance].backingScaleFactor);
 
@@ -71,8 +63,8 @@ WindowImplUIKit::WindowImplUIKit(VideoMode mode,
 
     // Create the window
     CGRect frame = [UIScreen mainScreen].bounds; // Ignore user size, it wouldn't make sense to use something else
-    m_window = [[UIWindow alloc] initWithFrame:frame];
-    m_hasFocus = true;
+    m_window     = [[UIWindow alloc] initWithFrame:frame];
+    m_hasFocus   = true;
 
     // Assign it to the application delegate
     [SFAppDelegate getInstance].sfWindow = this;
@@ -84,10 +76,10 @@ WindowImplUIKit::WindowImplUIKit(VideoMode mode,
     [m_view resignFirstResponder];
 
     // Create the view controller
-    m_viewController = [SFViewController alloc];
-    m_viewController.view = m_view;
+    m_viewController                      = [SFViewController alloc];
+    m_viewController.view                 = m_view;
     m_viewController.orientationCanChange = style & Style::Resize;
-    m_window.rootViewController = m_viewController;
+    m_window.rootViewController           = m_viewController;
 
     // Make it the current window
     [m_window makeKeyAndVisible];
@@ -111,25 +103,12 @@ void WindowImplUIKit::processEvents()
 ////////////////////////////////////////////////////////////
 WindowHandle WindowImplUIKit::getSystemHandle() const
 {
-#if defined(__APPLE__)
-    #if defined(__clang__)
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wold-style-cast"
-    #elif defined(__GNUC__)
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wold-style-cast"
-    #endif
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 
     return (__bridge WindowHandle)m_window;
 
-#if defined(__APPLE__)
-    #if defined(__clang__)
-        #pragma clang diagnostic pop
-    #elif defined(__GNUC__)
-        #pragma GCC diagnostic pop
-    #endif
-#endif
+#pragma GCC diagnostic pop
 }
 
 
@@ -137,7 +116,8 @@ WindowHandle WindowImplUIKit::getSystemHandle() const
 Vector2i WindowImplUIKit::getPosition() const
 {
     CGPoint origin = m_window.frame.origin;
-    return Vector2i(static_cast<int>(origin.x * static_cast<double>(m_backingScale)), static_cast<int>(origin.y * static_cast<double>(m_backingScale)));
+    return Vector2i(static_cast<int>(origin.x * static_cast<double>(m_backingScale)),
+                    static_cast<int>(origin.y * static_cast<double>(m_backingScale)));
 }
 
 
@@ -151,7 +131,8 @@ void WindowImplUIKit::setPosition(const Vector2i& /* position */)
 Vector2u WindowImplUIKit::getSize() const
 {
     CGRect physicalFrame = m_window.frame;
-    return Vector2u(static_cast<unsigned int>(physicalFrame.size.width * static_cast<double>(m_backingScale)), static_cast<unsigned int>(physicalFrame.size.height * static_cast<double>(m_backingScale)));
+    return Vector2u(static_cast<unsigned int>(physicalFrame.size.width * static_cast<double>(m_backingScale)),
+                    static_cast<unsigned int>(physicalFrame.size.height * static_cast<double>(m_backingScale)));
 }
 
 

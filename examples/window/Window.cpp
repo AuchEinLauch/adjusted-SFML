@@ -2,6 +2,7 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Window.hpp>
+
 #include <cstdlib>
 
 #define GLAD_GL_IMPLEMENTATION
@@ -12,8 +13,8 @@
 #endif
 
 #include <array>
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 ////////////////////////////////////////////////////////////
 /// Entry point of application
@@ -74,6 +75,7 @@ int main()
 #endif
 
     // Define a 3D cube (6 faces made of 2 triangles composed by 3 vertices)
+    // clang-format off
     constexpr std::array<GLfloat, 252> cube =
     {
         // positions    // colors (r, g, b, a)
@@ -119,6 +121,7 @@ int main()
          50, -50,  50,  1, 1, 0, 1,
          50,  50,  50,  1, 1, 0, 1,
     };
+    // clang-format on
 
     // Enable position and color vertex components
     glEnableClientState(GL_VERTEX_ARRAY);

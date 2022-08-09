@@ -1,7 +1,8 @@
 #include <SFML/System/Angle.hpp>
-#include "SystemUtil.hpp"
 
-#include <doctest.h>
+#include <doctest/doctest.h>
+
+#include <SystemUtil.hpp>
 
 TEST_CASE("sf::Angle class - [system]")
 {
@@ -10,8 +11,8 @@ TEST_CASE("sf::Angle class - [system]")
         SUBCASE("Default constructor")
         {
             const sf::Angle angle;
-            CHECK(angle.asDegrees() == 0);
-            CHECK(angle.asRadians() == 0);
+            CHECK(angle.asDegrees() == 0.f);
+            CHECK(angle.asRadians() == 0.f);
         }
 
         SUBCASE("wrapSigned()")
@@ -79,8 +80,8 @@ TEST_CASE("sf::Angle class - [system]")
 
     SUBCASE("Constants")
     {
-        CHECK(sf::Angle::Zero.asDegrees() == 0);
-        CHECK(sf::Angle::Zero.asRadians() == 0);
+        CHECK(sf::Angle::Zero.asDegrees() == 0.f);
+        CHECK(sf::Angle::Zero.asRadians() == 0.f);
     }
 
     SUBCASE("Operators")
@@ -224,8 +225,8 @@ TEST_CASE("sf::Angle class - [system]")
             CHECK(sf::degrees(10) / 2.5f == sf::degrees(4));
             CHECK(sf::radians(12) / 3 == sf::radians(4));
 
-            CHECK(sf::Angle::Zero / sf::degrees(1) == 0);
-            CHECK(sf::degrees(10) / sf::degrees(10) == 1);
+            CHECK(sf::Angle::Zero / sf::degrees(1) == 0.f);
+            CHECK(sf::degrees(10) / sf::degrees(10) == 1.f);
             CHECK(sf::radians(10) / sf::radians(2) == Approx(5.f));
         }
 
@@ -274,15 +275,15 @@ TEST_CASE("sf::Angle class - [system]")
             using namespace sf::Literals;
             CHECK(0.0_rad == sf::Angle::Zero);
             CHECK(1.0_rad == sf::radians(1));
-            CHECK(-1.0_rad ==sf::radians(-1));
+            CHECK(-1.0_rad == sf::radians(-1));
             CHECK(3.14_rad == sf::radians(3.14f));
             CHECK(-3.14_rad == sf::radians(-3.14f));
 
             CHECK(0_rad == sf::Angle::Zero);
             CHECK(1_rad == sf::radians(1));
             CHECK(-1_rad == sf::radians(-1));
-            CHECK(100_rad ==sf::radians(100));
-            CHECK(-100_rad ==sf::radians(-100));
+            CHECK(100_rad == sf::radians(100));
+            CHECK(-100_rad == sf::radians(-100));
         }
     }
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 
 # define a macro that helps defining an option
 macro(sfml_set_option var default type docstring)
@@ -395,11 +395,7 @@ else()
     # NOTE: it's not required to link against SFML.framework
     set_target_properties(SFML PROPERTIES INSTALL_NAME_DIR "@rpath")
     if(NOT CMAKE_SKIP_BUILD_RPATH)
-        if (CMAKE_VERSION VERSION_LESS 3.9)
-            set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-        else()
-            set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_NAME_DIR TRUE)
-        endif()
+        set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_NAME_DIR TRUE)
     endif()
 
     # install rule
@@ -536,3 +532,12 @@ string(REGEX REPLACE "/" "\\\\\\\\" NSIS_IMAGE_PATH ${NSIS_IMAGE_PATH})
 set(CPACK_NSIS_INSTALLER_MUI_ICON_CODE "!define MUI_WELCOMEFINISHPAGE_BITMAP \\\"${NSIS_IMAGE_PATH}sidebar.bmp\\\"\n!define MUI_HEADERIMAGE_BITMAP \\\"${NSIS_IMAGE_PATH}header.bmp\\\"\n!define MUI_ICON \\\"${NSIS_IMAGE_PATH}sfml.ico\\\"")
 
 include(CPack)
+
+if(NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    return()
+endif()
+
+sfml_set_option(CLANG_FORMAT_EXECUTABLE clang-format STRING "Override clang-format executable, requires minimum version 12")
+add_custom_target(format
+    COMMAND ${CMAKE_COMMAND} "-DCLANG_FORMAT_EXECUTABLE=${CLANG_FORMAT_EXECUTABLE}" -P ./cmake/Format.cmake
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}" VERBATIM)

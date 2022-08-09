@@ -1,6 +1,7 @@
 #include <SFML/Network.hpp>
 
-#include <doctest.h>
+#include <doctest/doctest.h>
+
 #include <limits>
 
 template <typename IntegerType>

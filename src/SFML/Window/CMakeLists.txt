@@ -150,6 +150,7 @@ elseif(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OS_OPENBSD OR SFML_OS_NETBSD)
     endif()
     source_group("unix" FILES ${PLATFORM_SRC})
 elseif(SFML_OS_MACOSX)
+    enable_language(OBJC OBJCXX)
     set(PLATFORM_SRC
         ${SRCROOT}/OSX/cpp_objc_conversion.h
         ${SRCROOT}/OSX/cpp_objc_conversion.mm
@@ -203,6 +204,7 @@ elseif(SFML_OS_MACOSX)
     )
     source_group("mac" FILES ${PLATFORM_SRC})
 elseif(SFML_OS_IOS)
+    enable_language(OBJCXX)
     set(PLATFORM_SRC
         ${SRCROOT}/iOS/CursorImpl.hpp
         ${SRCROOT}/iOS/CursorImpl.cpp
@@ -272,18 +274,13 @@ target_link_libraries(sfml-window PUBLIC SFML::System)
 # glad sources
 target_include_directories(sfml-window SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/glad/include")
 
-# When static linking on macOS, we need to add this flag for objective C to work
-if ((NOT BUILD_SHARED_LIBS) AND SFML_OS_MACOSX)
-    target_link_libraries(sfml-window PRIVATE -ObjC)
-endif()
-
 # Vulkan headers
 target_include_directories(sfml-window SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/vulkan")
 
 # CMake 3.11 and later prefer to choose GLVND, but we choose legacy OpenGL for backward compability
 # (unless the OpenGL_GL_PREFERENCE was explicitly set)
 # See CMP0072 for more details (cmake --help-policy CMP0072)
-if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
+if (NOT OpenGL_GL_PREFERENCE)
     set(OpenGL_GL_PREFERENCE "LEGACY")
 endif()
 

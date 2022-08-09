@@ -29,8 +29,10 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Export.hpp>
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
+
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -47,7 +49,6 @@ class InputStream;
 class SFML_GRAPHICS_API Image
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief Create the image and fill it with a unique color
     ///
@@ -196,13 +197,25 @@ public:
     /// See https://en.wikipedia.org/wiki/Alpha_compositing for
     /// details on the \b over operator.
     ///
+    /// Note that this function can fail if either image is invalid
+    /// (i.e. zero-sized width or height), or if \a sourceRect is
+    /// not within the boundaries of the \a source parameter, or
+    /// if the destination area is out of the boundaries of this image.
+    ///
+    /// On failure, the destination image is left unchanged.
+    ///
     /// \param source     Source image to copy
     /// \param dest       Coordinates of the destination position
     /// \param sourceRect Sub-rectangle of the source image to copy
     /// \param applyAlpha Should the copy take into account the source transparency?
     ///
+    /// \return True if the operation was successful, false otherwise
+    ///
     ////////////////////////////////////////////////////////////
-    void copy(const Image& source, const Vector2u& dest, const IntRect& sourceRect = IntRect({0, 0}, {0, 0}), bool applyAlpha = false);
+    [[nodiscard]] bool copy(const Image&    source,
+                            const Vector2u& dest,
+                            const IntRect&  sourceRect = IntRect({0, 0}, {0, 0}),
+                            bool            applyAlpha = false);
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the color of a pixel
@@ -263,7 +276,6 @@ public:
     void flipVertically();
 
 private:
-
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
@@ -308,15 +320,16 @@ private:
 ///
 /// // Create a 20x20 image filled with black color
 /// sf::Image image;
-/// image.create(20, 20, sf::Color::Black);
+/// image.create({20, 20}, sf::Color::Black);
 ///
-/// // Copy image1 on image2 at position (10, 10)
-/// image.copy(background, 10, 10);
+/// // Copy background on image at position (10, 10)
+/// if (!image.copy(background, {10, 10}))
+///     return -1;
 ///
 /// // Make the top-left pixel transparent
-/// sf::Color color = image.getPixel(0, 0);
+/// sf::Color color = image.getPixel({0, 0});
 /// color.a = 0;
-/// image.setPixel(0, 0, color);
+/// image.setPixel({0, 0}, color);
 ///
 /// // Save the image to a file
 /// if (!image.saveToFile("result.png"))

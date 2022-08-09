@@ -29,14 +29,16 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Export.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/View.hpp>
+
 #include <SFML/Graphics/BlendMode.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/IndexBuffer.hpp>
+#include <SFML/Graphics/View.hpp>
+
 #include <cstddef>
 
 
@@ -53,7 +55,6 @@ class Transform;
 class SFML_GRAPHICS_API RenderTarget
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
     ///
@@ -258,8 +259,10 @@ public:
     /// \param states      Render states to use for drawing
     ///
     ////////////////////////////////////////////////////////////
-    void draw(const Vertex* vertices, std::size_t vertexCount,
-              PrimitiveType type, const RenderStates& states = RenderStates::Default);
+    void draw(const Vertex*       vertices,
+              std::size_t         vertexCount,
+              PrimitiveType       type,
+              const RenderStates& states = RenderStates::Default);
 
     ////////////////////////////////////////////////////////////
     /// \brief Draw primitives defined by a vertex buffer
@@ -282,7 +285,10 @@ public:
     /// \param states       Render states to use for drawing
     ///
     ////////////////////////////////////////////////////////////
-    void draw(const VertexBuffer& vertexBuffer, std::size_t firstVertex, std::size_t vertexCount, const RenderStates& states = RenderStates::Default);
+    void draw(const VertexBuffer& vertexBuffer,
+              std::size_t         firstVertex,
+              std::size_t         vertexCount,
+              const RenderStates& states = RenderStates::Default);
 
     //NOT OFFICIAL
     void draw(const VertexBuffer& vertexBuffer,const IndexBuffer& indexBuffer, std::size_t indexCount, const RenderStates& states = RenderStates::Default);
@@ -395,7 +401,6 @@ public:
     void resetGLStates();
 
 protected:
-
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ///
@@ -412,7 +417,6 @@ protected:
     void initialize();
 
 private:
-
     ////////////////////////////////////////////////////////////
     /// \brief Apply the current view
     ///
@@ -487,15 +491,18 @@ private:
     ////////////////////////////////////////////////////////////
     struct StatesCache
     {
-        enum {VertexCacheSize = 4};
+        enum
+        {
+            VertexCacheSize = 4
+        };
 
-        bool      enable;         //!< Is the cache enabled?
-        bool      glStatesSet;    //!< Are our internal GL states set yet?
-        bool      viewChanged;    //!< Has the current view changed since last draw?
-        BlendMode lastBlendMode;  //!< Cached blending mode
-        Uint64    lastTextureId;  //!< Cached texture
-        bool      texCoordsArrayEnabled; //!< Is GL_TEXTURE_COORD_ARRAY client state enabled?
-        bool      useVertexCache; //!< Did we previously use the vertex cache?
+        bool      enable;                       //!< Is the cache enabled?
+        bool      glStatesSet;                  //!< Are our internal GL states set yet?
+        bool      viewChanged;                  //!< Has the current view changed since last draw?
+        BlendMode lastBlendMode;                //!< Cached blending mode
+        Uint64    lastTextureId;                //!< Cached texture
+        bool      texCoordsArrayEnabled;        //!< Is GL_TEXTURE_COORD_ARRAY client state enabled?
+        bool      useVertexCache;               //!< Did we previously use the vertex cache?
         Vertex    vertexCache[VertexCacheSize]; //!< Pre-transformed vertices cache
     };
 

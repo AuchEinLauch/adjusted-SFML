@@ -1,3 +1,12 @@
+include(FetchContent)
+
+set(DOCTEST_NO_INSTALL ON)
+FetchContent_Declare(doctest
+    GIT_REPOSITORY "https://github.com/doctest/doctest.git"
+    GIT_TAG v2.4.9
+)
+FetchContent_MakeAvailable(doctest)
+
 add_library(sfml-test-main STATIC
     DoctestMain.cpp
     TestUtilities/SystemUtil.hpp
@@ -7,21 +16,29 @@ add_library(sfml-test-main STATIC
     TestUtilities/GraphicsUtil.hpp
     TestUtilities/GraphicsUtil.cpp
 )
-target_include_directories(sfml-test-main SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/headers")
 target_include_directories(sfml-test-main PUBLIC TestUtilities)
-target_link_libraries(sfml-test-main PUBLIC SFML::System)
+target_compile_definitions(sfml-test-main PUBLIC DOCTEST_CONFIG_REQUIRE_STRINGIFICATION_FOR_ALL_USED_TYPES)
+target_link_libraries(sfml-test-main PUBLIC SFML::System doctest::doctest)
 set_target_warnings(sfml-test-main)
 
 SET(SYSTEM_SRC
     System/Angle.cpp
     System/Clock.cpp
+    System/Config.cpp
     System/Err.cpp
     System/FileInputStream.cpp
+    System/MemoryInputStream.cpp
     System/Time.cpp
     System/Vector2.cpp
     System/Vector3.cpp
 )
 sfml_add_test(test-sfml-system "${SYSTEM_SRC}" SFML::System)
+target_compile_definitions(test-sfml-system PRIVATE
+    EXPECTED_SFML_VERSION_MAJOR=${SFML_VERSION_MAJOR}
+    EXPECTED_SFML_VERSION_MINOR=${SFML_VERSION_MINOR}
+    EXPECTED_SFML_VERSION_PATCH=${SFML_VERSION_PATCH}
+    EXPECTED_SFML_VERSION_IS_RELEASE=$<IF:$<BOOL:${VERSION_IS_RELEASE}>,true,false>
+)
 
 SET(WINDOW_SRC
     Window/ContextSettings.cpp
@@ -35,6 +52,7 @@ SET(GRAPHICS_SRC
     Graphics/Color.cpp
     Graphics/ConvexShape.cpp
     Graphics/Glyph.cpp
+    Graphics/Image.cpp
     Graphics/Rect.cpp
     Graphics/RectangleShape.cpp
     Graphics/Shape.cpp
@@ -48,6 +66,7 @@ SET(GRAPHICS_SRC
 sfml_add_test(test-sfml-graphics "${GRAPHICS_SRC}" SFML::Graphics)
 
 SET(NETWORK_SRC
+    Network/IpAddress.cpp
     Network/Packet.cpp
 )
 sfml_add_test(test-sfml-network "${NETWORK_SRC}" SFML::Network)

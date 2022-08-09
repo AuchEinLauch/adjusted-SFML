@@ -4,6 +4,7 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
+
 #include <iostream>
 
 
@@ -18,7 +19,6 @@ const sf::Uint8 clientEndOfStream = 2;
 class NetworkRecorder : public sf::SoundRecorder
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// Constructor
     ///
@@ -26,9 +26,7 @@ public:
     /// \param port Port of the remote host
     ///
     ////////////////////////////////////////////////////////////
-    NetworkRecorder(const sf::IpAddress& host, unsigned short port) :
-    m_host(host),
-    m_port(port)
+    NetworkRecorder(const sf::IpAddress& host, unsigned short port) : m_host(host), m_port(port)
     {
     }
 
@@ -45,7 +43,6 @@ public:
     }
 
 private:
-
     ////////////////////////////////////////////////////////////
     /// \see SoundRecorder::onStart
     ///
@@ -121,16 +118,15 @@ void doClient(unsigned short port)
     }
 
     // Ask for server address
-    sf::IpAddress server;
+    std::optional<sf::IpAddress> server;
     do
     {
         std::cout << "Type address or name of the server to connect to: ";
-        std::cin  >> server;
-    }
-    while (server == sf::IpAddress::None);
+        std::cin >> server;
+    } while (!server.has_value());
 
     // Create an instance of our custom recorder
-    NetworkRecorder recorder(server, port);
+    NetworkRecorder recorder(server.value(), port);
 
     // Wait for user input...
     std::cin.ignore(10000, '\n');

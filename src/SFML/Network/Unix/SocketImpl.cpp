@@ -27,10 +27,11 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Network/Unix/SocketImpl.hpp>
 #include <SFML/System/Err.hpp>
-#include <ostream>
+
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
+#include <ostream>
 
 
 namespace sf
@@ -81,7 +82,6 @@ void SocketImpl::setBlocking(SocketHandle sock, bool block)
     {
         if (fcntl(sock, F_SETFL, status | O_NONBLOCK) == -1)
             err() << "Failed to set file status flags: " << errno << std::endl;
-
     }
 }
 
@@ -95,6 +95,7 @@ Socket::Status SocketImpl::getErrorStatus()
     if ((errno == EAGAIN) || (errno == EINPROGRESS))
         return Socket::NotReady;
 
+    // clang-format off
     switch (errno)
     {
         case EWOULDBLOCK:  return Socket::NotReady;
@@ -106,6 +107,7 @@ Socket::Status SocketImpl::getErrorStatus()
         case EPIPE:        return Socket::Disconnected;
         default:           return Socket::Error;
     }
+    // clang-format on
 }
 
 } // namespace priv

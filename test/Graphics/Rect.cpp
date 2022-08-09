@@ -1,8 +1,9 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
-#include "GraphicsUtil.hpp"
 
-#include <doctest.h>
+#include <doctest/doctest.h>
+
+#include <GraphicsUtil.hpp>
 
 TEST_CASE("sf::Rect class template - [graphics]")
 {
@@ -30,7 +31,7 @@ TEST_CASE("sf::Rect class template - [graphics]")
         {
             sf::Vector2i position(1, 2);
             sf::Vector2i dimension(3, 4);
-            sf::IntRect rectangle(position, dimension);
+            sf::IntRect  rectangle(position, dimension);
 
             CHECK(rectangle.left == 1);
             CHECK(rectangle.top == 2);
@@ -41,7 +42,7 @@ TEST_CASE("sf::Rect class template - [graphics]")
         SUBCASE("Conversion constructor")
         {
             sf::FloatRect sourceRectangle({1.0f, 2.0f}, {3.0f, 4.0f});
-            sf::IntRect rectangle(sourceRectangle);
+            sf::IntRect   rectangle(sourceRectangle);
 
             CHECK(rectangle.left == static_cast<int>(sourceRectangle.left));
             CHECK(rectangle.top == static_cast<int>(sourceRectangle.top));
@@ -50,24 +51,21 @@ TEST_CASE("sf::Rect class template - [graphics]")
         }
     }
 
-    SUBCASE("Containment")
+    SUBCASE("contains(Vector2)")
     {
-        SUBCASE("contains(Vector2)")
-        {
-            sf::IntRect rectangle({0, 0}, {10, 10});
+        sf::IntRect rectangle({0, 0}, {10, 10});
 
-            CHECK(rectangle.contains(sf::Vector2i(0, 0)) == true);
-            CHECK(rectangle.contains(sf::Vector2i(9, 0)) == true);
-            CHECK(rectangle.contains(sf::Vector2i(0, 9)) == true);
-            CHECK(rectangle.contains(sf::Vector2i(9, 9)) == true);
-            CHECK(rectangle.contains(sf::Vector2i(9, 10)) == false);
-            CHECK(rectangle.contains(sf::Vector2i(10, 9)) == false);
-            CHECK(rectangle.contains(sf::Vector2i(10, 10)) == false);
-            CHECK(rectangle.contains(sf::Vector2i(15, 15)) == false);
-        }
+        CHECK(rectangle.contains(sf::Vector2i(0, 0)) == true);
+        CHECK(rectangle.contains(sf::Vector2i(9, 0)) == true);
+        CHECK(rectangle.contains(sf::Vector2i(0, 9)) == true);
+        CHECK(rectangle.contains(sf::Vector2i(9, 9)) == true);
+        CHECK(rectangle.contains(sf::Vector2i(9, 10)) == false);
+        CHECK(rectangle.contains(sf::Vector2i(10, 9)) == false);
+        CHECK(rectangle.contains(sf::Vector2i(10, 10)) == false);
+        CHECK(rectangle.contains(sf::Vector2i(15, 15)) == false);
     }
 
-    SUBCASE("Intersection")
+    SUBCASE("findIntersection()")
     {
         const sf::IntRect rectangle({0, 0}, {10, 10});
         const sf::IntRect intersectingRectangle({5, 5}, {10, 10});
@@ -81,16 +79,42 @@ TEST_CASE("sf::Rect class template - [graphics]")
 
         const sf::IntRect nonIntersectingRectangle({-5, -5}, {5, 5});
         CHECK_FALSE(rectangle.findIntersection(nonIntersectingRectangle).has_value());
-        CHECK_FALSE(rectangle.findIntersection(nonIntersectingRectangle));
     }
 
-    SUBCASE("Comparison operations")
+    SUBCASE("getPosition()")
     {
-        sf::IntRect firstRectangle({1, 3}, {2, 5});
-        sf::IntRect secondRectangle({1, 3}, {2, 5});
-        sf::IntRect differentRectangle({3, 1}, {5, 2});
+        CHECK(sf::IntRect({}, {}).getPosition() == sf::Vector2i());
+        CHECK(sf::IntRect({1, 2}, {3, 4}).getPosition() == sf::Vector2i(1, 2));
+    }
 
-        CHECK(firstRectangle == secondRectangle);
-        CHECK(firstRectangle != differentRectangle);
+    SUBCASE("getSize()")
+    {
+        CHECK(sf::IntRect({}, {}).getSize() == sf::Vector2i());
+        CHECK(sf::IntRect({1, 2}, {3, 4}).getSize() == sf::Vector2i(3, 4));
+    }
+
+    SUBCASE("Operators")
+    {
+        SUBCASE("operator==")
+        {
+            CHECK(sf::IntRect() == sf::IntRect());
+            CHECK(sf::IntRect({1, 3}, {2, 5}) == sf::IntRect({1, 3}, {2, 5}));
+
+            CHECK_FALSE(sf::IntRect({1, 0}, {0, 0}) == sf::IntRect({0, 0}, {0, 0}));
+            CHECK_FALSE(sf::IntRect({0, 1}, {0, 0}) == sf::IntRect({0, 0}, {0, 0}));
+            CHECK_FALSE(sf::IntRect({0, 0}, {1, 0}) == sf::IntRect({0, 0}, {0, 0}));
+            CHECK_FALSE(sf::IntRect({0, 0}, {0, 1}) == sf::IntRect({0, 0}, {0, 0}));
+        }
+
+        SUBCASE("operator!=")
+        {
+            CHECK(sf::IntRect({1, 0}, {0, 0}) != sf::IntRect({0, 0}, {0, 0}));
+            CHECK(sf::IntRect({0, 1}, {0, 0}) != sf::IntRect({0, 0}, {0, 0}));
+            CHECK(sf::IntRect({0, 0}, {1, 0}) != sf::IntRect({0, 0}, {0, 0}));
+            CHECK(sf::IntRect({0, 0}, {0, 1}) != sf::IntRect({0, 0}, {0, 0}));
+
+            CHECK_FALSE(sf::IntRect() != sf::IntRect());
+            CHECK_FALSE(sf::IntRect({1, 3}, {2, 5}) != sf::IntRect({1, 3}, {2, 5}));
+        }
     }
 }

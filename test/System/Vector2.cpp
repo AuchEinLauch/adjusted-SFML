@@ -1,8 +1,10 @@
 #include <SFML/System/Vector2.hpp>
-#include "SystemUtil.hpp"
-#include <type_traits>
 
-#include <doctest.h>
+#include <doctest/doctest.h>
+
+#include <SystemUtil.hpp>
+#include <cmath>
+#include <type_traits>
 
 using namespace sf::Literals;
 
@@ -76,9 +78,11 @@ TEST_CASE("sf::Vector2 class template - [system]")
             CHECK(sf::Vector2f(-1, -360_deg) == Approx(sf::Vector2f(-1, 0)));
 
             CHECK(sf::Vector2f(4.2f, 0_deg) == sf::Vector2f(4.2f, 0));
-            CHECK(sf::Vector2f(4.2f, 45_deg) == Approx(sf::Vector2f(4.2f * std::sqrt(2.f) / 2.f, 4.2f * std::sqrt(2.f) / 2.f)));
+            CHECK(sf::Vector2f(4.2f, 45_deg) ==
+                  Approx(sf::Vector2f(4.2f * std::sqrt(2.f) / 2.f, 4.2f * std::sqrt(2.f) / 2.f)));
             CHECK(sf::Vector2f(4.2f, 90_deg) == Approx(sf::Vector2f(0, 4.2f)));
-            CHECK(sf::Vector2f(4.2f, 135_deg) == Approx(sf::Vector2f(-4.2f * std::sqrt(2.f) / 2.f, 4.2f * std::sqrt(2.f) / 2.f)));
+            CHECK(sf::Vector2f(4.2f, 135_deg) ==
+                  Approx(sf::Vector2f(-4.2f * std::sqrt(2.f) / 2.f, 4.2f * std::sqrt(2.f) / 2.f)));
             CHECK(sf::Vector2f(4.2f, 180_deg) == Approx(sf::Vector2f(-4.2f, 0)));
             CHECK(sf::Vector2f(4.2f, 270_deg) == Approx(sf::Vector2f(0, -4.2f)));
             CHECK(sf::Vector2f(4.2f, 360_deg) == Approx(sf::Vector2f(4.2f, 0)));
@@ -103,7 +107,7 @@ TEST_CASE("sf::Vector2 class template - [system]")
 
     SUBCASE("Arithmetic operations between two vectors")
     {
-        sf::Vector2i firstVector(2, 5);
+        sf::Vector2i       firstVector(2, 5);
         const sf::Vector2i secondVector(8, 3);
 
         SUBCASE("vector += vector")
@@ -142,7 +146,7 @@ TEST_CASE("sf::Vector2 class template - [system]")
     SUBCASE("Arithmetic operations between vector and scalar value")
     {
         sf::Vector2i vector(26, 12);
-        int scalar = 2;
+        int          scalar = 2;
 
         SUBCASE("vector * scalar")
         {
@@ -248,7 +252,7 @@ TEST_CASE("sf::Vector2 class template - [system]")
         CHECK(v.normalized() == Approx(sf::Vector2f(0.624695f, 0.780869f)));
 
         const sf::Vector2f w(-0.7f, -2.2f);
-        
+
         CHECK(w.length() == Approx(2.30868f));
         CHECK(w.lengthSq() == Approx(5.3300033f));
         CHECK(w.normalized() == Approx(sf::Vector2f(-0.303204f, -0.952926f)));
@@ -257,7 +261,7 @@ TEST_CASE("sf::Vector2 class template - [system]")
     SUBCASE("Rotations and angles")
     {
         const sf::Vector2f v(2.4f, 3.0f);
-        
+
         CHECK(v.angle() == Approx(51.3402_deg));
         CHECK(sf::Vector2f::UnitX.angleTo(v) == Approx(51.3402_deg));
         CHECK(sf::Vector2f::UnitY.angleTo(v) == Approx(-38.6598_deg));
@@ -272,7 +276,7 @@ TEST_CASE("sf::Vector2 class template - [system]")
         CHECK(w.angleTo(v) == Approx(158.9902_deg));
 
         const float ratio = w.length() / v.length();
-        CHECK(v.rotatedBy(-158.9902_deg) * ratio  == Approx(w));
+        CHECK(v.rotatedBy(-158.9902_deg) * ratio == Approx(w));
         CHECK(w.rotatedBy(158.9902_deg) / ratio == Approx(v));
 
         CHECK(v.perpendicular() == sf::Vector2f(-3.0f, 2.4f));
@@ -282,7 +286,7 @@ TEST_CASE("sf::Vector2 class template - [system]")
         CHECK(v.rotatedBy(27.14_deg) == Approx(sf::Vector2f(0.767248f, 3.76448f)));
         CHECK(v.rotatedBy(-36.11_deg) == Approx(sf::Vector2f(3.70694f, 1.00925f)));
     }
-    
+
     SUBCASE("Products and quotients")
     {
         const sf::Vector2f v(2.4f, 3.0f);
@@ -293,18 +297,18 @@ TEST_CASE("sf::Vector2 class template - [system]")
 
         CHECK(v.cross(w) == Approx(-3.18f));
         CHECK(w.cross(v) == Approx(+3.18f));
-        
+
         CHECK(v.cwiseMul(w) == Approx(sf::Vector2f(-1.68f, -6.6f)));
         CHECK(w.cwiseMul(v) == Approx(sf::Vector2f(-1.68f, -6.6f)));
         CHECK(v.cwiseDiv(w) == Approx(sf::Vector2f(-3.428571f, -1.363636f)));
         CHECK(w.cwiseDiv(v) == Approx(sf::Vector2f(-0.291666f, -0.733333f)));
     }
-    
+
     SUBCASE("Projection")
     {
         const sf::Vector2f v(2.4f, 3.0f);
         const sf::Vector2f w(-0.7f, -2.2f);
-        
+
         CHECK(v.projectedOnto(w) == Approx(sf::Vector2f(1.087430f, 3.417636f)));
         CHECK(v.projectedOnto(w) == Approx(sf::Vector2f(-1.55347f * w)));
 
