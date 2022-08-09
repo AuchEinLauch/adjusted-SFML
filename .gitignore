@@ -38,3 +38,7 @@ build/
 .cache/
 .vscode/
 .idea/
+.vs
+
+#examples
+/examples

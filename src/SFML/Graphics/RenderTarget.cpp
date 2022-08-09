@@ -31,6 +31,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/VertexBuffer.hpp>
+#include <SFML/Graphics/IndexBuffer.hpp>
 #include <SFML/Graphics/GLCheck.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/System/Err.hpp>
@@ -386,6 +387,59 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
     }
 }
 
+void RenderTarget::draw(const VertexBuffer& vertexBuffer, const IndexBuffer& indexBuffer, const RenderStates& states)
+{
+    draw(vertexBuffer, indexBuffer, indexBuffer.getIndexCount(), states);
+
+}
+
+void RenderTarget::draw(const VertexBuffer& vertexBuffer, const IndexBuffer& indexBuffer, std::size_t indexCount, const RenderStates& states)
+{
+    // VertexBuffer not supported?
+    if (!VertexBuffer::isAvailable())
+    {
+        err() << "sf::VertexBuffer is not available, drawing skipped" << std::endl;
+        return;
+    }
+
+    // Clamp vertexCount to something that makes sense
+    indexCount = std::min(indexCount, indexBuffer.getIndexCount());
+
+    // Nothing to draw?
+    if (!indexCount || !vertexBuffer.getNativeHandle() || !indexBuffer.getNativeHandle())
+        return;
+
+    if (RenderTargetImpl::isActive(m_id) || setActive(true))
+    {
+        setupDraw(false, states);
+
+        // Bind vertex buffer
+        VertexBuffer::bind(&vertexBuffer);
+        IndexBuffer::bind(&indexBuffer);
+
+        // Always enable texture coordinates
+        if (!m_cache.enable || !m_cache.texCoordsArrayEnabled)
+            glCheck(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
+
+        glCheck(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(0)));
+        glCheck(glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex), reinterpret_cast<const void*>(8)));
+        glCheck(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(12)));
+
+        drawPrimitives(vertexBuffer.getPrimitiveType(), indexCount);
+
+        // Unbind vertex buffer
+        VertexBuffer::bind(nullptr);
+        IndexBuffer::bind(nullptr);
+
+        cleanupDraw(states);
+
+        // Update the cache
+        m_cache.useVertexCache = false;
+        m_cache.texCoordsArrayEnabled = true;
+    }
+
+}
+
 
 ////////////////////////////////////////////////////////////
 bool RenderTarget::isSrgb() const
@@ -738,6 +792,17 @@ void RenderTarget::drawPrimitives(PrimitiveType type, std::size_t firstVertex, s
 
     // Draw the primitives
     glCheck(glDrawArrays(mode, static_cast<GLint>(firstVertex), static_cast<GLsizei>(vertexCount)));
+}
+
+void RenderTarget::drawPrimitives(PrimitiveType type, std::size_t indexCount)
+{
+    // Find the OpenGL primitive type
+    static constexpr GLenum modes[] = { GL_POINTS, GL_LINES, GL_LINE_STRIP, GL_TRIANGLES,
+                                       GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN };
+    GLenum mode = modes[type];
+
+    // Draw the primitives
+    glCheck(glDrawElements(mode,static_cast<GLsizei>(indexCount),GL_UNSIGNED_INT,nullptr));
 }
 
 

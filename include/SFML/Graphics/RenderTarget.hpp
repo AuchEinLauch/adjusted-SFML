@@ -36,6 +36,7 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Vertex.hpp>
+#include <SFML/Graphics/IndexBuffer.hpp>
 #include <cstddef>
 
 
@@ -269,6 +270,9 @@ public:
     ////////////////////////////////////////////////////////////
     void draw(const VertexBuffer& vertexBuffer, const RenderStates& states = RenderStates::Default);
 
+    //NOT OFFICIAL USED IMPLEMENTED IN SFML!!!
+    void draw(const VertexBuffer& vertexBuffer, const IndexBuffer& indexBuffer, const RenderStates& states = RenderStates::Default);
+
     ////////////////////////////////////////////////////////////
     /// \brief Draw primitives defined by a vertex buffer
     ///
@@ -279,6 +283,10 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     void draw(const VertexBuffer& vertexBuffer, std::size_t firstVertex, std::size_t vertexCount, const RenderStates& states = RenderStates::Default);
+
+    //NOT OFFICIAL
+    void draw(const VertexBuffer& vertexBuffer,const IndexBuffer& indexBuffer, std::size_t indexCount, const RenderStates& states = RenderStates::Default);
+
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the size of the rendering region of the target
@@ -461,6 +469,9 @@ private:
     ///
     ////////////////////////////////////////////////////////////
     void drawPrimitives(PrimitiveType type, std::size_t firstVertex, std::size_t vertexCount);
+
+    //NOT OFFICIAL
+    void drawPrimitives(PrimitiveType type, std::size_t indexCount);
 
     ////////////////////////////////////////////////////////////
     /// \brief Clean up environment after drawing
